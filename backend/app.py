@@ -13,7 +13,7 @@ def form_generation():
     try:
         llm = ChatGroq(
             model="llama-3.1-8b-instant",
-            api_key="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",  # ← paste your key here
+            api_key=("API_KEY"),  # ← paste your key here
             temperature=0.5
         )
 
