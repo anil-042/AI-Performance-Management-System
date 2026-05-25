@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from langchain_groq import ChatGroq
+from dotenv import load_dotenv
 import os
 import json
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -13,7 +16,7 @@ def form_generation():
     try:
         llm = ChatGroq(
             model="llama-3.1-8b-instant",
-            api_key=("API_KEY"),  # ← paste your key here
+            api_key=os.getenv("API_KEY"), 
             temperature=0.5
         )
 
@@ -71,4 +74,4 @@ def form_generation():
 
 if __name__ == "__main__":
     port=int(os.environ.get("PORT", 5001))
-    app.run(debug=True, port=port)  # ← port 5001
+    app.run(debug=True, port=port)  
