@@ -1,3 +1,4 @@
+  
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from langchain_groq import ChatGroq
@@ -14,13 +15,12 @@ CORS(app)
 def ping():
     return "pong", 200
 
-# Initialize LLM
 @app.route("/form_generation", methods=["POST"])
 def form_generation():
     try:
         llm = ChatGroq(
             model="llama-3.1-8b-instant",
-            api_key=os.getenv("API_KEY"), 
+            api_key=os.getenv("API_KEY"),
             temperature=0.5
         )
 
@@ -35,8 +35,19 @@ def form_generation():
             prompt = f"""
             Generate 5 role-specific performance evaluation questions.
             Role: {role}
-            Experience: {experience}
+            Experience Level: {experience}
             Section: {section}
+
+            Important instructions based on experience level:
+            - If experience is 0-1 years or "fresher": Use simple language, ask about basic concepts,
+              learning attitude, foundational skills, and willingness to grow. Avoid jargon.
+              Focus on potential, not past achievements.
+            - If experience is 1-3 years: Ask about hands-on application of skills, small project
+              ownership, and early problem-solving.
+            - If experience is 3+ years: Ask about advanced skills, leadership, strategy,
+              and measurable impact.
+
+            Tailor every question to match the {experience} experience level for a {role}.
             Return ONLY a JSON array like:
             ["question1", "question2", "question3", "question4", "question5"]
             """
@@ -65,9 +76,9 @@ def form_generation():
             "employee_information": {"role": role, "experience": experience},
             "feedback_sections": feedback_sections,
             "open_ended_feedback": {
-                "areas_for_improvement": f"What areas should a {role} improve?",
-                "strengths": f"What are the key strengths of this {role}?",
-                "suggestions_for_growth": f"What growth suggestions would you give for {experience} experience?"
+                "areas_for_improvement": f"What areas should a {role} with {experience} experience focus on improving?",
+                "strengths": f"What foundational strengths should a {role} at {experience} level demonstrate?",
+                "suggestions_for_growth": f"What growth path would you suggest for a {role} with {experience} experience?"
             }
         }
 
@@ -77,5 +88,5 @@ def form_generation():
         return jsonify({"error": str(e)})
 
 if __name__ == "__main__":
-    port=int(os.environ.get("PORT", 5001))
-    app.run(debug=True, port=port)  
+    port = int(os.environ.get("PORT", 5001))
+    app.run(debug=True, port=port)
